@@ -1,0 +1,24 @@
+{
+  "name": "ramixaq-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ramixaq AI: An AI-Powered Career Intelligence and Internship Readiness Platform for Students.",
+  "scripts": {
+    "install:all": "npm --prefix server install && npm --prefix client install",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "build:client": "npm --prefix client run build",
+    "check:server": "npm --prefix server run check"
+  },
+  "keywords": [
+    "mern",
+    "career-dashboard",
+    "career-intelligence",
+    "ai",
+    "react",
+    "node",
+    "mongodb"
+  ],
+  "author": "",
+  "license": "MIT"
+}

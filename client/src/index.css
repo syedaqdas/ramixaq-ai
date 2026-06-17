@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.12), transparent 34rem),
+    linear-gradient(135deg, #09090b 0%, #101012 48%, #111827 100%);
+  color: #f4f4f5;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+@layer components {
+  .card {
+    @apply rounded-lg border border-line bg-panel/85 shadow-glow;
+  }
+
+  .input {
+    @apply w-full rounded-md border border-line bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-500 focus:border-cyan focus:ring-2 focus:ring-cyan/20;
+  }
+
+  .label {
+    @apply text-xs font-medium uppercase tracking-wide text-zinc-400;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-md bg-cyan px-4 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-cyan/90 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border border-line bg-panelSoft px-4 py-2 text-sm font-semibold text-zinc-100 transition hover:border-zinc-500;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-200 transition hover:bg-red-500/20;
+  }
+
+  .chip {
+    @apply inline-flex items-center rounded-full border border-line bg-zinc-950 px-2.5 py-1 text-xs font-medium text-zinc-300;
+  }
+
+  .page-title {
+    @apply text-2xl font-bold text-white sm:text-3xl;
+  }
+}
+
