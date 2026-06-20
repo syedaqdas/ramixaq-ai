@@ -1,11 +1,13 @@
 import { UserPlus } from "lucide-react";
 import { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { getApiErrorMessage } from "../api/errors";
 import FormInput from "../components/FormInput";
 import { useAuth } from "../context/AuthContext";
 
 const Register = () => {
   const { register, token } = useAuth();
+  const navigate = useNavigate();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -18,9 +20,14 @@ const Register = () => {
     setError("");
 
     try {
-      await register(form);
+      await register({
+        name: form.name.trim(),
+        email: form.email.trim().toLowerCase(),
+        password: form.password
+      });
+      navigate("/dashboard", { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      setError(getApiErrorMessage(err, "Registration failed. Please try again."));
     } finally {
       setSubmitting(false);
     }

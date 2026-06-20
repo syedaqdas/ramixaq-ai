@@ -5,33 +5,62 @@ const AuthContext = createContext(null);
 const TOKEN_KEY = "ramixaq_token";
 const USER_KEY = "ramixaq_user";
 
+const readStorage = (key) => {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+};
+
+const writeStorage = (key, value) => {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // Keep the authenticated session in React state when storage is unavailable.
+  }
+};
+
+const removeStorage = (key) => {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // The in-memory session is still cleared below.
+  }
+};
+
 const readStoredUser = () => {
   try {
-    return JSON.parse(localStorage.getItem(USER_KEY));
+    return JSON.parse(readStorage(USER_KEY));
   } catch {
     return null;
   }
 };
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem(TOKEN_KEY));
+  const storedToken = readStorage(TOKEN_KEY);
+  const [token, setToken] = useState(storedToken);
   const [user, setUser] = useState(readStoredUser());
-  const [loading, setLoading] = useState(Boolean(localStorage.getItem(TOKEN_KEY)));
+  const [loading, setLoading] = useState(Boolean(storedToken));
 
   const persistSession = (session) => {
+    if (!session?.token || !session?.user) {
+      throw new Error("The authentication response did not include a valid session.");
+    }
+
     setToken(session.token);
     setUser(session.user);
     setAuthToken(session.token);
-    localStorage.setItem(TOKEN_KEY, session.token);
-    localStorage.setItem(USER_KEY, JSON.stringify(session.user));
+    writeStorage(TOKEN_KEY, session.token);
+    writeStorage(USER_KEY, JSON.stringify(session.user));
   };
 
   const logout = () => {
     setToken(null);
     setUser(null);
     setAuthToken(null);
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
+    removeStorage(TOKEN_KEY);
+    removeStorage(USER_KEY);
   };
 
   useEffect(() => {
@@ -45,7 +74,7 @@ export const AuthProvider = ({ children }) => {
         setAuthToken(token);
         const { data } = await api.get("/auth/me");
         setUser(data.user);
-        localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+        writeStorage(USER_KEY, JSON.stringify(data.user));
       } catch {
         logout();
       } finally {
@@ -57,19 +86,33 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const register = async (payload) => {
-    const { data } = await api.post("/auth/register", payload);
+    const response = await api.post("/auth/register", payload);
+
+    if (response.status !== 201) {
+      throw new Error(`Registration returned an unexpected status: ${response.status}`);
+    }
+
+    const { data } = response;
     persistSession(data);
+    return data;
   };
 
   const login = async (payload) => {
-    const { data } = await api.post("/auth/login", payload);
+    const response = await api.post("/auth/login", payload);
+
+    if (response.status !== 200) {
+      throw new Error(`Login returned an unexpected status: ${response.status}`);
+    }
+
+    const { data } = response;
     persistSession(data);
+    return data;
   };
 
   const updateProfile = async (payload) => {
     const { data } = await api.put("/auth/profile", payload);
     setUser(data.user);
-    localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+    writeStorage(USER_KEY, JSON.stringify(data.user));
     return data.user;
   };
 

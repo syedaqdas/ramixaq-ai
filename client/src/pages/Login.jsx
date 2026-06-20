@@ -1,11 +1,13 @@
 import { LogIn } from "lucide-react";
 import { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { getApiErrorMessage } from "../api/errors";
 import FormInput from "../components/FormInput";
 import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
   const { login, token } = useAuth();
+  const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -18,9 +20,13 @@ const Login = () => {
     setError("");
 
     try {
-      await login(form);
+      await login({
+        email: form.email.trim().toLowerCase(),
+        password: form.password
+      });
+      navigate("/dashboard", { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      setError(getApiErrorMessage(err, "Login failed. Please try again."));
     } finally {
       setSubmitting(false);
     }
