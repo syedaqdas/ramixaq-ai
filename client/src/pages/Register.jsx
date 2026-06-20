@@ -39,9 +39,11 @@ const Register = () => {
       <div className="fixed right-4 top-4"><ThemeToggle /></div>
       <section className="w-full max-w-md">
         <div className="mb-8">
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-cyan text-xl font-black text-zinc-950">
-            RA
-          </div>
+          <img
+            src="/ramixaq-logo.png"
+            alt="Ramixaq AI"
+            className="h-24 w-24 rounded-lg object-cover shadow-xl shadow-cyan/10"
+          />
           <h1 className="mt-5 text-3xl font-bold text-white">Join Ramixaq AI</h1>
           <p className="mt-2 text-sm font-semibold text-cyan">Build. Track. Achieve.</p>
           <p className="mt-2 text-sm text-zinc-400">Create your career intelligence profile.</p>

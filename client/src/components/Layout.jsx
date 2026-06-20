@@ -53,9 +53,11 @@ const Sidebar = ({ onNavigate }) => {
   return (
     <aside className="flex h-full flex-col overflow-y-auto border-r border-line bg-zinc-950/95 p-4">
       <div className="mb-8">
-        <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-cyan text-lg font-black text-zinc-950">
-          RA
-        </div>
+        <img
+          src="/ramixaq-logo.png"
+          alt="Ramixaq AI"
+          className="h-16 w-16 rounded-lg object-cover shadow-lg shadow-cyan/10"
+        />
         <h1 className="mt-4 text-xl font-bold text-white">Ramixaq AI</h1>
         <p className="mt-1 text-sm text-zinc-500">{user?.headline || "Build. Track. Achieve."}</p>
       </div>
