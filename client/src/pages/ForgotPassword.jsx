@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/axios";
 import { getApiErrorMessage } from "../api/errors";
+import BrandLogo from "../components/BrandLogo";
+import DeveloperCredit from "../components/DeveloperCredit";
 import FormInput from "../components/FormInput";
 import ThemeToggle from "../components/ThemeToggle";
 
@@ -30,7 +32,8 @@ const ForgotPassword = () => {
     <main className="grid min-h-screen place-items-center px-4 py-10">
       <div className="fixed right-4 top-4"><ThemeToggle /></div>
       <section className="w-full max-w-md">
-        <h1 className="text-3xl font-bold text-white">Reset your password</h1>
+        <BrandLogo size="md" linkTo="/" eager />
+        <h1 className="mt-5 text-3xl font-bold text-white">Reset your password</h1>
         <p className="mt-2 text-sm text-zinc-400">Enter your account email and we will send a secure reset link.</p>
         <form className="card mt-6 space-y-4 p-6" onSubmit={handleSubmit}>
           {message && <p className="rounded-md border border-mint/30 bg-mint/10 p-3 text-sm text-green-200">{message}</p>}
@@ -42,6 +45,7 @@ const ForgotPassword = () => {
           </button>
         </form>
         <Link className="mt-5 block text-center text-sm font-semibold text-cyan" to="/login">Back to login</Link>
+        <DeveloperCredit className="mt-7" />
       </section>
     </main>
   );

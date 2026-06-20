@@ -1,10 +1,20 @@
 # Ramixaq AI
 
+![Ramixaq AI official logo](client/public/ramixaq-logo.png)
+
 **Ramixaq AI: An AI-Powered Career Intelligence and Internship Readiness Platform for Students**
 
 Build. Track. Achieve.
 
 Ramixaq AI is a full stack MERN career intelligence platform for tracking internship readiness, skills, projects, certificates, resume progress, career goals, public portfolio data, AI resume intelligence, analytics, achievements, and admin monitoring.
+
+## Author
+
+Built and Developed by **Syed Aqdas Imam - Software Developer**
+
+- GitHub: [github.com/syedaqdas](https://github.com/syedaqdas)
+- LinkedIn: [linkedin.com/in/syedaqdas](https://linkedin.com/in/syedaqdas)
+- Portfolio: [syedaqdas.github.io/Portfolio-Website](https://syedaqdas.github.io/Portfolio-Website/)
 
 ## Tech Stack
 

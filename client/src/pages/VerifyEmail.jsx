@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import api from "../api/axios";
 import { getApiErrorMessage } from "../api/errors";
+import BrandLogo from "../components/BrandLogo";
+import DeveloperCredit from "../components/DeveloperCredit";
 import ThemeToggle from "../components/ThemeToggle";
 import { useAuth } from "../context/AuthContext";
 
@@ -32,12 +34,16 @@ const VerifyEmail = () => {
     <main className="grid min-h-screen place-items-center px-4 py-10">
       <div className="fixed right-4 top-4"><ThemeToggle /></div>
       <section className="card w-full max-w-md p-7 text-center">
-        <BadgeCheck className={`mx-auto ${success ? "text-mint" : "text-cyan"}`} size={44} />
+        <div className="flex justify-center">
+          <BrandLogo size="md" linkTo="/" eager />
+        </div>
+        <BadgeCheck className={`mx-auto mt-5 ${success ? "text-mint" : "text-cyan"}`} size={44} />
         <h1 className="mt-4 text-2xl font-bold text-white">Email verification</h1>
         <p className="mt-3 text-sm text-zinc-400">{status}</p>
         <Link className="btn-primary mt-6" to={success ? "/dashboard" : "/profile"}>
           {success ? "Open dashboard" : "Open profile"}
         </Link>
+        <DeveloperCredit className="mt-7" />
       </section>
     </main>
   );

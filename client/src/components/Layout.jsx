@@ -18,8 +18,10 @@ import {
   UserRound
 } from "lucide-react";
 import { useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import BrandLogo from "./BrandLogo";
+import DeveloperCredit from "./DeveloperCredit";
 import NotificationCenter from "./NotificationCenter";
 import ThemeToggle from "./ThemeToggle";
 
@@ -53,11 +55,7 @@ const Sidebar = ({ onNavigate }) => {
   return (
     <aside className="flex h-full flex-col overflow-y-auto border-r border-line bg-zinc-950/95 p-4">
       <div className="mb-8">
-        <img
-          src="/ramixaq-logo.png"
-          alt="Ramixaq AI"
-          className="h-16 w-16 rounded-lg object-cover shadow-lg shadow-cyan/10"
-        />
+        <BrandLogo size="md" linkTo="/dashboard" eager />
         <h1 className="mt-4 text-xl font-bold text-white">Ramixaq AI</h1>
         <p className="mt-1 text-sm text-zinc-500">{user?.headline || "Build. Track. Achieve."}</p>
       </div>
@@ -126,7 +124,10 @@ const Layout = () => {
           <button className="btn-secondary px-3 lg:hidden" onClick={() => setOpen(true)} aria-label="Open menu">
             <Menu size={18} />
           </button>
-          <span className="font-semibold text-white lg:hidden">Ramixaq AI</span>
+          <Link className="flex items-center gap-2 lg:hidden" to="/dashboard" aria-label="Ramixaq AI dashboard">
+            <BrandLogo size="sm" />
+            <span className="hidden font-semibold text-white sm:inline">Ramixaq AI</span>
+          </Link>
           <div className="ml-auto flex gap-2">
             <NotificationCenter />
             <ThemeToggle />
@@ -144,6 +145,7 @@ const Layout = () => {
             <p className="hidden text-sm text-zinc-500 sm:block">{user?.email}</p>
           </div>
           <Outlet />
+          <DeveloperCredit className="mt-10 border-t border-line pt-6" />
         </div>
       </main>
 

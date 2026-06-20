@@ -2,6 +2,7 @@ import { Award, BadgeCheck, BriefcaseBusiness, ExternalLink, Target } from "luci
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/axios";
+import BrandLogo from "../components/BrandLogo";
 import PageHeader from "../components/PageHeader";
 import ReadinessMeter from "../components/ReadinessMeter";
 import StatCard from "../components/StatCard";
@@ -29,6 +30,14 @@ const Dashboard = () => {
 
   return (
     <div>
+      <div className="mb-6 flex items-center gap-4 border-b border-line pb-5">
+        <BrandLogo size="md" eager />
+        <div>
+          <p className="text-lg font-bold text-white">Ramixaq AI</p>
+          <p className="mt-1 text-sm text-zinc-500">Build. Track. Achieve.</p>
+        </div>
+      </div>
+
       <PageHeader eyebrow="Career dashboard" title="Internship readiness">
         <Link className="btn-secondary" to={portfolioPath}>
           <ExternalLink size={18} />

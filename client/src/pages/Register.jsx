@@ -2,6 +2,8 @@ import { UserPlus } from "lucide-react";
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { getApiErrorMessage } from "../api/errors";
+import BrandLogo from "../components/BrandLogo";
+import DeveloperCredit from "../components/DeveloperCredit";
 import FormInput from "../components/FormInput";
 import ThemeToggle from "../components/ThemeToggle";
 import { useAuth } from "../context/AuthContext";
@@ -39,11 +41,7 @@ const Register = () => {
       <div className="fixed right-4 top-4"><ThemeToggle /></div>
       <section className="w-full max-w-md">
         <div className="mb-8">
-          <img
-            src="/ramixaq-logo.png"
-            alt="Ramixaq AI"
-            className="h-24 w-24 rounded-lg object-cover shadow-xl shadow-cyan/10"
-          />
+          <BrandLogo size="lg" linkTo="/" eager />
           <h1 className="mt-5 text-3xl font-bold text-white">Join Ramixaq AI</h1>
           <p className="mt-2 text-sm font-semibold text-cyan">Build. Track. Achieve.</p>
           <p className="mt-2 text-sm text-zinc-400">Create your career intelligence profile.</p>
@@ -84,6 +82,7 @@ const Register = () => {
             Login
           </Link>
         </p>
+        <DeveloperCredit className="mt-7" />
       </section>
     </main>
   );

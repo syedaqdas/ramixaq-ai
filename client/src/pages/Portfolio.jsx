@@ -2,6 +2,8 @@ import { Award, BadgeCheck, BriefcaseBusiness, Github, Globe, Linkedin, MapPin, 
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api from "../api/axios";
+import BrandLogo from "../components/BrandLogo";
+import DeveloperCredit from "../components/DeveloperCredit";
 import StatusBadge from "../components/StatusBadge";
 import ThemeToggle from "../components/ThemeToggle";
 import { externalUrl } from "../utils/format";
@@ -28,7 +30,10 @@ const Portfolio = () => {
     <main className="min-h-screen px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <div className="flex items-center justify-between">
-          <Link className="text-sm font-semibold text-cyan hover:text-cyan/80" to="/dashboard">Ramixaq AI</Link>
+          <Link className="flex items-center gap-3" to="/" aria-label="Ramixaq AI home">
+            <BrandLogo size="sm" />
+            <span className="text-sm font-semibold text-cyan">Ramixaq AI</span>
+          </Link>
           <ThemeToggle />
         </div>
 
@@ -110,6 +115,7 @@ const Portfolio = () => {
             </div>
           </div>
         </section>
+        <DeveloperCredit className="mt-10 border-t border-line py-6" />
       </div>
     </main>
   );
