@@ -9,6 +9,7 @@ import {
   recommendInternships
 } from "../utils/careerIntelligence.js";
 import { logActivity } from "../utils/activity.js";
+import { createNotification } from "../utils/notification.js";
 
 export const analyzeResume = async (req, res, next) => {
   try {
@@ -50,6 +51,13 @@ export const analyzeResume = async (req, res, next) => {
       message: "Resume analyzed",
       metadata: { atsScore, targetRole, extractedSkills: extractedSkills.length },
       ip: req.ip
+    });
+    await createNotification({
+      user: req.user._id,
+      title: "Resume analysis ready",
+      message: `Your ATS score is ${atsScore}. Review the missing skills and recommendations.`,
+      type: atsScore >= 75 ? "success" : "warning",
+      link: "/ai/resume-analyzer"
     });
 
     res.status(201).json({
@@ -105,4 +113,3 @@ export const getInternshipRecommendations = async (req, res, next) => {
     next(error);
   }
 };
-

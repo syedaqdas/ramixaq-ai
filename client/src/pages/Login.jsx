@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { getApiErrorMessage } from "../api/errors";
 import FormInput from "../components/FormInput";
+import ThemeToggle from "../components/ThemeToggle";
 import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
@@ -34,6 +35,7 @@ const Login = () => {
 
   return (
     <main className="grid min-h-screen place-items-center px-4 py-10">
+      <div className="fixed right-4 top-4"><ThemeToggle /></div>
       <section className="w-full max-w-md">
         <div className="mb-8">
           <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-cyan text-xl font-black text-zinc-950">
@@ -62,6 +64,11 @@ const Login = () => {
             onChange={(event) => setForm({ ...form, password: event.target.value })}
             required
           />
+          <div className="text-right">
+            <Link className="text-xs font-semibold text-cyan hover:text-cyan/80" to="/forgot-password">
+              Forgot password?
+            </Link>
+          </div>
           <button className="btn-primary w-full" disabled={submitting}>
             <LogIn size={18} />
             {submitting ? "Signing in..." : "Login"}

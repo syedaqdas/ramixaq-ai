@@ -25,7 +25,7 @@ const Dashboard = () => {
 
   if (loading) return <p className="text-zinc-400">Loading dashboard...</p>;
 
-  const portfolioPath = `/portfolio/${user?.id}`;
+  const portfolioPath = user?.publicSlug ? `/p/${user.publicSlug}` : `/portfolio/${user?.id}`;
 
   return (
     <div>
@@ -114,4 +114,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-

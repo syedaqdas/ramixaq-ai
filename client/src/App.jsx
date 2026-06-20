@@ -3,11 +3,15 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Portfolio from "./pages/Portfolio";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import VerifyEmail from "./pages/VerifyEmail";
 
 const Achievements = lazy(() => import("./pages/Achievements"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
@@ -29,12 +33,17 @@ const PageLoader = () => <div className="py-10 text-sm text-zinc-400">Loading wo
 
 const App = () => (
   <BrowserRouter>
-    <AuthProvider>
-      <Routes>
+    <ThemeProvider>
+      <AuthProvider>
+        <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/portfolio/:userId" element={<Portfolio />} />
+        <Route path="/p/:slug" element={<Portfolio />} />
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
             <Route path="/dashboard" element={<Dashboard />} />
@@ -56,8 +65,9 @@ const App = () => (
           </Route>
         </Route>
         <Route path="*" element={<NotFound />} />
-      </Routes>
-    </AuthProvider>
+        </Routes>
+      </AuthProvider>
+    </ThemeProvider>
   </BrowserRouter>
 );
 

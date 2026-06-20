@@ -6,6 +6,10 @@
   color-scheme: dark;
 }
 
+html {
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -19,6 +23,55 @@ body {
     linear-gradient(135deg, #09090b 0%, #101012 48%, #111827 100%);
   color: #f4f4f5;
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+html.light body {
+  background:
+    radial-gradient(circle at top left, rgba(8, 145, 178, 0.1), transparent 34rem),
+    linear-gradient(135deg, #f8fafc 0%, #eef2f7 55%, #e2e8f0 100%);
+  color: #18181b;
+}
+
+html.light .card {
+  border-color: #d4d4d8 !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08) !important;
+}
+
+html.light [class*="bg-zinc-950"],
+html.light [class*="bg-panelSoft"],
+html.light [class*="bg-panel/"],
+html.light [class*="bg-ink/"] {
+  background-color: #f8fafc !important;
+}
+
+html.light .text-white,
+html.light .text-zinc-100,
+html.light .text-zinc-200,
+html.light .text-zinc-300 {
+  color: #18181b !important;
+}
+
+html.light .text-zinc-400,
+html.light .text-zinc-500 {
+  color: #52525b !important;
+}
+
+html.light .border-line {
+  border-color: #d4d4d8 !important;
+}
+
+html.light .input {
+  border-color: #cbd5e1;
+  background: #ffffff;
+  color: #111827;
+}
+
+html.light .btn-secondary,
+html.light .chip {
+  border-color: #d4d4d8;
+  background: #ffffff;
+  color: #18181b;
 }
 
 a {
@@ -65,4 +118,3 @@ textarea {
     @apply text-2xl font-bold text-white sm:text-3xl;
   }
 }
-

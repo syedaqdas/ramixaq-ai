@@ -15,12 +15,13 @@ import {
   Sparkles,
   Target,
   Trophy,
-  UserRound,
-  X
+  UserRound
 } from "lucide-react";
 import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import NotificationCenter from "./NotificationCenter";
+import ThemeToggle from "./ThemeToggle";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: Gauge },
@@ -118,30 +119,49 @@ const Layout = () => {
         </div>
       )}
 
-      <header className="sticky top-0 z-20 border-b border-line bg-ink/80 backdrop-blur lg:hidden">
+      <header className="sticky top-0 z-20 border-b border-line bg-ink/80 backdrop-blur lg:pl-72">
         <div className="flex items-center justify-between px-4 py-3">
-          <button className="btn-secondary px-3" onClick={() => setOpen(true)} aria-label="Open menu">
+          <button className="btn-secondary px-3 lg:hidden" onClick={() => setOpen(true)} aria-label="Open menu">
             <Menu size={18} />
           </button>
-          <span className="font-semibold text-white">Ramixaq AI</span>
-          <button className="btn-secondary px-3" onClick={() => setOpen(false)} aria-label="Close menu">
-            <X size={18} />
-          </button>
+          <span className="font-semibold text-white lg:hidden">Ramixaq AI</span>
+          <div className="ml-auto flex gap-2">
+            <NotificationCenter />
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
       <main className="lg:pl-72">
-        <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <div className="mb-6 flex flex-col gap-1 border-b border-line pb-5 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mx-auto w-full max-w-7xl px-4 py-6 pb-24 sm:px-6 lg:px-8 lg:pb-8">
+          <div className="mb-6 flex flex-col gap-3 border-b border-line pb-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-zinc-500">Build. Track. Achieve.</p>
               <p className="text-xl font-semibold text-white">{user?.name}</p>
             </div>
-            <p className="text-sm text-zinc-500">{user?.email}</p>
+            <p className="hidden text-sm text-zinc-500 sm:block">{user?.email}</p>
           </div>
           <Outlet />
         </div>
       </main>
+
+      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-line bg-zinc-950/95 px-2 py-2 backdrop-blur lg:hidden">
+        {[
+          { to: "/dashboard", label: "Home", icon: Gauge },
+          { to: "/ai/resume-analyzer", label: "Resume", icon: FileScan },
+          { to: "/ai/internships", label: "Matches", icon: GraduationCap },
+          { to: "/profile", label: "Profile", icon: UserRound }
+        ].map(({ to, label, icon: Icon }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) => `flex flex-col items-center gap-1 rounded-md py-1 text-[11px] font-medium ${isActive ? "text-cyan" : "text-zinc-500"}`}
+          >
+            <Icon size={18} />
+            {label}
+          </NavLink>
+        ))}
+      </nav>
     </div>
   );
 };

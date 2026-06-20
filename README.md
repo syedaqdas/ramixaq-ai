@@ -33,7 +33,14 @@ Ramixaq AI is a full stack MERN career intelligence platform for tracking intern
 - Resume builder with downloadable PDF generation
 - Achievement system with XP, badges, and level progression
 - Admin dashboard for user statistics and activity monitoring
-- Clean responsive dark UI
+- Editable profile with Cloudinary profile photo upload
+- Email verification and secure password reset by SMTP
+- Public portfolios with unique `/p/:slug` URLs
+- Downloadable profile and resume PDFs
+- Persistent dark/light mode
+- In-app notifications with unread state
+- Responsive mobile navigation and theme-aware analytics
+- Clean responsive dark and light UI
 
 ## Folder Structure
 
@@ -89,6 +96,15 @@ NODE_ENV=development
 MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/ramixaq-ai
 JWT_SECRET=replace-with-a-long-random-secret
 CLIENT_URL=http://localhost:5173
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-smtp-username
+SMTP_PASS=your-smtp-password
+EMAIL_FROM=Ramixaq AI <no-reply@example.com>
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
 ```
 
 Create `client/.env` from `client/.env.example`:
@@ -121,6 +137,10 @@ Backend health check: `http://localhost:5000/api/health`
 
 - `POST /api/auth/register`
 - `POST /api/auth/login`
+- `POST /api/auth/forgot-password`
+- `POST /api/auth/reset-password`
+- `POST /api/auth/verify-email`
+- `POST /api/auth/resend-verification`
 - `GET /api/auth/me`
 - `PUT /api/auth/profile`
 
@@ -134,6 +154,11 @@ Backend health check: `http://localhost:5000/api/health`
 - `GET /api/achievements`
 - `GET /api/resume/download`
 - `GET /api/portfolio/generate`
+- `POST /api/profile/avatar`
+- `GET /api/profile/export`
+- `GET /api/notifications`
+- `PUT /api/notifications/read-all`
+- `PUT /api/notifications/:id/read`
 - `GET /api/dashboard/summary`
 - `GET /api/roadmap`
 - `GET|POST /api/skills`
@@ -148,6 +173,7 @@ Backend health check: `http://localhost:5000/api/health`
 ### Public
 
 - `GET /api/public/profile/:userId`
+- `GET /api/public/portfolio/:slug`
 
 ### Admin
 
@@ -177,8 +203,10 @@ Admin endpoints require the authenticated user document to have `role: "admin"`.
    - `MONGO_URI=your MongoDB Atlas connection string`
    - `JWT_SECRET=your long random secret`
    - `CLIENT_URL=https://your-vercel-app.vercel.app`
+   - SMTP variables for verification and password-reset emails
+   - Cloudinary variables for persistent profile photo storage
 
-PDF upload is handled in memory with a 5 MB limit, so no persistent file volume is required on Render.
+PDF and image uploads are handled in memory. Resume PDFs are limited to 5 MB and profile images to 2 MB. Profile images are persisted in Cloudinary, so no Render disk is required.
 
 You can also use the included `render.yaml` as a blueprint.
 
@@ -203,3 +231,6 @@ The included `client/vercel.json` handles SPA routing rewrites.
 - Promote one trusted user to `role: "admin"` in MongoDB before using the admin dashboard.
 - Test PDF upload with a real resume under 5 MB.
 - Confirm resume PDF download and generated portfolio HTML work in production.
+- Configure and test SMTP email delivery before enabling public signups.
+- Configure Cloudinary and verify profile photo uploads from the deployed frontend.
+- Verify the custom portfolio URL and profile PDF export for a production account.

@@ -55,6 +55,11 @@ export const AuthProvider = ({ children }) => {
     writeStorage(USER_KEY, JSON.stringify(session.user));
   };
 
+  const setSessionUser = (nextUser) => {
+    setUser(nextUser);
+    writeStorage(USER_KEY, JSON.stringify(nextUser));
+  };
+
   const logout = () => {
     setToken(null);
     setUser(null);
@@ -73,8 +78,7 @@ export const AuthProvider = ({ children }) => {
       try {
         setAuthToken(token);
         const { data } = await api.get("/auth/me");
-        setUser(data.user);
-        writeStorage(USER_KEY, JSON.stringify(data.user));
+        setSessionUser(data.user);
       } catch {
         logout();
       } finally {
@@ -111,8 +115,7 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = async (payload) => {
     const { data } = await api.put("/auth/profile", payload);
-    setUser(data.user);
-    writeStorage(USER_KEY, JSON.stringify(data.user));
+    setSessionUser(data.user);
     return data.user;
   };
 
@@ -124,7 +127,8 @@ export const AuthProvider = ({ children }) => {
       register,
       login,
       logout,
-      updateProfile
+      updateProfile,
+      setSessionUser
     }),
     [token, user, loading]
   );

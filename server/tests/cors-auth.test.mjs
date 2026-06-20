@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
 import Activity from "../src/models/Activity.js";
+import Notification from "../src/models/Notification.js";
 import User from "../src/models/User.js";
 
 process.env.JWT_SECRET = "test-only-jwt-secret";
@@ -20,11 +21,16 @@ const user = {
   github: "",
   linkedin: "",
   website: "",
+  publicSlug: "cors-test",
+  emailVerified: true,
   role: "student",
   xp: 0,
   level: 1,
   badges: [],
-  matchPassword: async () => true
+  matchPassword: async () => true,
+  save: async function save() {
+    return this;
+  }
 };
 
 let server;
@@ -37,8 +43,10 @@ before(async () => {
       resolve(null);
     }
   });
+  User.exists = async () => false;
   User.create = async (payload) => ({ ...user, ...payload });
   Activity.create = async () => ({});
+  Notification.create = async () => ({});
 
   await new Promise((resolve) => {
     server = app.listen(0, "127.0.0.1", () => {
@@ -105,4 +113,52 @@ test("login returns a JWT to a Vercel origin", async () => {
   assert.equal(response.status, 200);
   assert.equal(response.headers.get("access-control-allow-origin"), origin);
   assert.ok(data.token);
+});
+
+test("forgot password returns a privacy-safe response", async () => {
+  const response = await fetch(`${baseUrl}/api/auth/forgot-password`, {
+    method: "POST",
+    headers: {
+      Origin: origin,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email: user.email })
+  });
+  const data = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.match(data.message, /If an account exists/);
+});
+
+test("email verification accepts a valid token flow", async () => {
+  const response = await fetch(`${baseUrl}/api/auth/verify-email`, {
+    method: "POST",
+    headers: {
+      Origin: origin,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ token: "valid-test-token" })
+  });
+  const data = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(data.user.emailVerified, true);
+});
+
+test("password reset updates the password", async () => {
+  const response = await fetch(`${baseUrl}/api/auth/reset-password`, {
+    method: "POST",
+    headers: {
+      Origin: origin,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      token: "valid-test-token",
+      password: "UpdatedPass123"
+    })
+  });
+  const data = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(data.message, "Password reset successfully");
 });

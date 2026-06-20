@@ -31,9 +31,7 @@ const AIResumeAnalyzer = () => {
     setError("");
 
     try {
-      const { data } = await api.post("/ai/resume/analyze", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
+      const { data } = await api.post("/ai/resume/analyze", formData);
       setResult(data);
       setHistory([data.analysis, ...history]);
     } catch (err) {
@@ -134,4 +132,3 @@ const AIResumeAnalyzer = () => {
 };
 
 export default AIResumeAnalyzer;
-

@@ -8,8 +8,22 @@ import User from "../models/User.js";
 
 export const getAdminSummary = async (req, res, next) => {
   try {
-    const [users, skills, projects, certificates, goals, resumeAnalyses, activityCount, recentUsers, recentActivity] = await Promise.all([
+    const [
+      users,
+      verifiedUsers,
+      skills,
+      projects,
+      certificates,
+      goals,
+      resumeAnalyses,
+      activityCount,
+      recentUsers,
+      recentActivity,
+      userGrowth,
+      activityBreakdown
+    ] = await Promise.all([
       User.countDocuments(),
+      User.countDocuments({ emailVerified: true }),
       Skill.countDocuments(),
       Project.countDocuments(),
       Certificate.countDocuments(),
@@ -17,12 +31,28 @@ export const getAdminSummary = async (req, res, next) => {
       ResumeAnalysis.countDocuments(),
       Activity.countDocuments(),
       User.find().select("-password").sort({ createdAt: -1 }).limit(8),
-      Activity.find().populate("user", "name email").sort({ createdAt: -1 }).limit(12)
+      Activity.find().populate("user", "name email").sort({ createdAt: -1 }).limit(12),
+      User.aggregate([
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+            users: { $sum: 1 }
+          }
+        },
+        { $sort: { _id: 1 } },
+        { $limit: 12 }
+      ]),
+      Activity.aggregate([
+        { $group: { _id: "$type", count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 8 }
+      ])
     ]);
 
     res.json({
       totals: {
         users,
+        verifiedUsers,
         skills,
         projects,
         certificates,
@@ -30,6 +60,8 @@ export const getAdminSummary = async (req, res, next) => {
         resumeAnalyses,
         activities: activityCount
       },
+      userGrowth: userGrowth.map((item) => ({ month: item._id, users: item.users })),
+      activityBreakdown: activityBreakdown.map((item) => ({ type: item._id, count: item.count })),
       recentUsers,
       recentActivity
     });
@@ -46,4 +78,3 @@ export const getActivity = async (req, res, next) => {
     next(error);
   }
 };
-

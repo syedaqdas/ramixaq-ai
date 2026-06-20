@@ -3,31 +3,34 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api from "../api/axios";
 import StatusBadge from "../components/StatusBadge";
+import ThemeToggle from "../components/ThemeToggle";
 import { externalUrl } from "../utils/format";
 
 const Portfolio = () => {
-  const { userId } = useParams();
+  const { userId, slug } = useParams();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     api
-      .get(`/public/profile/${userId}`)
+      .get(slug ? `/public/portfolio/${slug}` : `/public/profile/${userId}`)
       .then(({ data }) => setProfile(data))
+      .catch(() => setProfile(null))
       .finally(() => setLoading(false));
-  }, [userId]);
+  }, [userId, slug]);
 
   if (loading) return <main className="grid min-h-screen place-items-center text-zinc-400">Loading portfolio...</main>;
-  if (!profile) return <main className="grid min-h-screen place-items-center text-zinc-400">Profile not found</main>;
+  if (!profile) return <main className="grid min-h-screen place-items-center text-zinc-400">Portfolio not found</main>;
 
   const { user, skills, projects, certificates, goals } = profile;
 
   return (
-    <main className="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
+    <main className="min-h-screen px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <div className="mx-auto max-w-6xl">
-        <Link className="text-sm font-semibold text-cyan hover:text-cyan/80" to="/dashboard">
-          Ramixaq AI
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link className="text-sm font-semibold text-cyan hover:text-cyan/80" to="/dashboard">Ramixaq AI</Link>
+          <ThemeToggle />
+        </div>
 
         <section className="mt-6 grid gap-6 border-b border-line pb-8 lg:grid-cols-[1fr_0.65fr]">
           <div>
@@ -35,8 +38,8 @@ const Portfolio = () => {
               <div className="grid h-24 w-24 place-items-center overflow-hidden rounded-lg border border-line bg-panelSoft text-3xl font-bold text-cyan">
                 {user.avatarUrl ? <img className="h-full w-full object-cover" src={user.avatarUrl} alt={user.name} /> : user.name?.slice(0, 2)}
               </div>
-              <div>
-                <h1 className="text-4xl font-bold text-white">{user.name}</h1>
+              <div className="min-w-0">
+                <h1 className="break-words text-3xl font-bold text-white sm:text-4xl">{user.name}</h1>
                 <p className="mt-2 text-lg text-zinc-300">{user.headline}</p>
                 {user.location && (
                   <p className="mt-2 flex items-center gap-2 text-sm text-zinc-500">
@@ -52,29 +55,14 @@ const Portfolio = () => {
           <div className="card p-5">
             <p className="label">Links</p>
             <div className="mt-4 space-y-3">
-              {user.github && (
-                <a className="btn-secondary w-full justify-start" href={externalUrl(user.github)} target="_blank" rel="noreferrer">
-                  <Github size={18} />
-                  GitHub
-                </a>
-              )}
-              {user.linkedin && (
-                <a className="btn-secondary w-full justify-start" href={externalUrl(user.linkedin)} target="_blank" rel="noreferrer">
-                  <Linkedin size={18} />
-                  LinkedIn
-                </a>
-              )}
-              {user.website && (
-                <a className="btn-secondary w-full justify-start" href={externalUrl(user.website)} target="_blank" rel="noreferrer">
-                  <Globe size={18} />
-                  Website
-                </a>
-              )}
+              {user.github && <a className="btn-secondary w-full justify-start" href={externalUrl(user.github)} target="_blank" rel="noreferrer"><Github size={18} />GitHub</a>}
+              {user.linkedin && <a className="btn-secondary w-full justify-start" href={externalUrl(user.linkedin)} target="_blank" rel="noreferrer"><Linkedin size={18} />LinkedIn</a>}
+              {user.website && <a className="btn-secondary w-full justify-start" href={externalUrl(user.website)} target="_blank" rel="noreferrer"><Globe size={18} />Website</a>}
             </div>
           </div>
         </section>
 
-        <section className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="mt-6 grid gap-4 grid-cols-2 lg:grid-cols-4">
           <div className="card p-4"><BadgeCheck className="text-cyan" /><p className="mt-3 text-2xl font-bold">{skills.length}</p><p className="text-sm text-zinc-500">Skills</p></div>
           <div className="card p-4"><BriefcaseBusiness className="text-mint" /><p className="mt-3 text-2xl font-bold">{projects.length}</p><p className="text-sm text-zinc-500">Projects</p></div>
           <div className="card p-4"><Award className="text-amber" /><p className="mt-3 text-2xl font-bold">{certificates.length}</p><p className="text-sm text-zinc-500">Certificates</p></div>
@@ -107,7 +95,7 @@ const Portfolio = () => {
           <div>
             <h2 className="text-2xl font-bold text-white">Skills</h2>
             <div className="mt-4 flex flex-wrap gap-2">
-              {skills.map((skill) => <span className="chip" key={skill._id}>{skill.name} · {skill.level}</span>)}
+              {skills.map((skill) => <span className="chip" key={skill._id}>{skill.name} - {skill.level}</span>)}
             </div>
           </div>
           <div>

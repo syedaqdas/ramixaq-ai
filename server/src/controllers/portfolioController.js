@@ -20,7 +20,10 @@ export const generatePortfolio = async (req, res, next) => {
       Goal.find({ user: req.user._id }).sort({ createdAt: -1 })
     ]);
 
-    const publicUrl = `${req.protocol}://${req.get("host")}/api/public/profile/${req.user._id}`;
+    const clientUrl = (process.env.CLIENT_URL || "").split(",")[0].trim().replace(/\/+$/, "");
+    const publicUrl = req.user.publicSlug
+      ? `${clientUrl}/p/${req.user.publicSlug}`
+      : `${clientUrl}/portfolio/${req.user._id}`;
     const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -48,27 +51,21 @@ export const generatePortfolio = async (req, res, next) => {
     <p class="muted">${escapeHtml(req.user.bio)}</p>
     <section>
       <h2>Skills</h2>
-      ${skills.map((skill) => `<span class="chip">${escapeHtml(skill.name)} · ${escapeHtml(skill.level)}</span>`).join("")}
+      ${skills.map((skill) => `<span class="chip">${escapeHtml(skill.name)} - ${escapeHtml(skill.level)}</span>`).join("")}
     </section>
     <section>
       <h2>Projects</h2>
       <div class="grid">
-        ${projects
-          .map(
-            (project) => `<article class="card"><h3>${escapeHtml(project.title)}</h3><p>${escapeHtml(
-              project.description
-            )}</p><p class="muted">${escapeHtml(project.techStack.join(", "))}</p></article>`
-          )
-          .join("")}
+        ${projects.map((project) => `<article class="card"><h3>${escapeHtml(project.title)}</h3><p>${escapeHtml(project.description)}</p><p class="muted">${escapeHtml(project.techStack.join(", "))}</p></article>`).join("")}
       </div>
     </section>
     <section>
       <h2>Certificates</h2>
-      ${certificates.map((certificate) => `<p>${escapeHtml(certificate.title)} · ${escapeHtml(certificate.issuer)}</p>`).join("")}
+      ${certificates.map((certificate) => `<p>${escapeHtml(certificate.title)} - ${escapeHtml(certificate.issuer)}</p>`).join("")}
     </section>
     <section>
       <h2>Internship Goals</h2>
-      ${goals.map((goal) => `<p>${escapeHtml(goal.title)} · ${escapeHtml(goal.status)}</p>`).join("")}
+      ${goals.map((goal) => `<p>${escapeHtml(goal.title)} - ${escapeHtml(goal.status)}</p>`).join("")}
     </section>
   </main>
 </body>
@@ -88,4 +85,3 @@ export const generatePortfolio = async (req, res, next) => {
     next(error);
   }
 };
-

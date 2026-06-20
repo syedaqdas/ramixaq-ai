@@ -1,12 +1,16 @@
-import { ArrowRight, Plus } from "lucide-react";
+import { ArrowRight, Plus, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/axios";
 import PageHeader from "../components/PageHeader";
+import { targetRoles } from "../utils/career";
 
 const Roadmap = () => {
   const [roadmap, setRoadmap] = useState(null);
+  const [targetRole, setTargetRole] = useState(targetRoles[0]);
+  const [aiRoadmap, setAiRoadmap] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     api
@@ -17,6 +21,13 @@ const Roadmap = () => {
 
   if (loading) return <p className="text-zinc-400">Loading roadmap...</p>;
 
+  const generateRoadmap = async () => {
+    setGenerating(true);
+    const { data } = await api.post("/ai/skill-gap", { targetRole });
+    setAiRoadmap(data);
+    setGenerating(false);
+  };
+
   return (
     <div>
       <PageHeader eyebrow="Skill planning" title="Roadmap">
@@ -25,6 +36,40 @@ const Roadmap = () => {
           Add skill
         </Link>
       </PageHeader>
+
+      <section className="card mb-4 grid gap-4 p-5 lg:grid-cols-[1fr_auto]">
+        <label className="space-y-2">
+          <span className="label">Generate roadmap for</span>
+          <select className="input" value={targetRole} onChange={(event) => setTargetRole(event.target.value)}>
+            {targetRoles.map((role) => <option key={role}>{role}</option>)}
+          </select>
+        </label>
+        <button className="btn-primary self-end" onClick={generateRoadmap} disabled={generating}>
+          <Sparkles size={18} />
+          {generating ? "Generating..." : "Generate AI roadmap"}
+        </button>
+      </section>
+
+      {aiRoadmap && (
+        <section className="card mb-4 p-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm uppercase tracking-wide text-cyan">Personalized plan</p>
+              <h2 className="mt-1 text-xl font-bold text-white">{aiRoadmap.targetRole}</h2>
+            </div>
+            <p className="text-3xl font-bold text-white">{aiRoadmap.matchScore}%</p>
+          </div>
+          <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {aiRoadmap.recommendations.map((item, index) => (
+              <div className="rounded-md border border-line bg-zinc-950 p-4" key={item.skill}>
+                <p className="text-xs font-semibold uppercase tracking-wide text-cyan">Step {index + 1} - {item.priority}</p>
+                <p className="mt-2 font-semibold text-white">{item.skill}</p>
+                <p className="mt-2 text-sm leading-6 text-zinc-400">{item.action}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="card p-5">
         <p className="text-sm uppercase tracking-wide text-cyan">Recommended track</p>
@@ -63,4 +108,3 @@ const Roadmap = () => {
 };
 
 export default Roadmap;
-
