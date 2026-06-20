@@ -11,6 +11,16 @@ const escapeHtml = (value = "") =>
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 
+const safeHttpUrl = (value = "") => {
+  if (!value) return "";
+  try {
+    const url = new URL(/^https?:\/\//i.test(value) ? value : `https://${value}`);
+    return ["http:", "https:"].includes(url.protocol) ? escapeHtml(url.toString()) : "";
+  } catch {
+    return "";
+  }
+};
+
 export const generatePortfolio = async (req, res, next) => {
   try {
     const [skills, projects, certificates, goals] = await Promise.all([
@@ -25,6 +35,12 @@ export const generatePortfolio = async (req, res, next) => {
       ? `${clientUrl}/p/${req.user.publicSlug}`
       : `${clientUrl}/portfolio/${req.user._id}`;
     const logoUrl = clientUrl ? `${clientUrl}/ramixaq-logo.png` : "/ramixaq-logo.png";
+    const profileLinks = [
+      ["GitHub", safeHttpUrl(req.user.github)],
+      ["LinkedIn", safeHttpUrl(req.user.linkedin)],
+      ["LeetCode", safeHttpUrl(req.user.leetcode)],
+      ["Portfolio", safeHttpUrl(req.user.portfolio || req.user.website)]
+    ].filter(([, url]) => url);
     const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -62,6 +78,13 @@ export const generatePortfolio = async (req, res, next) => {
     <h1>${escapeHtml(req.user.name)}</h1>
     <p>${escapeHtml(req.user.headline)}</p>
     <p class="muted">${escapeHtml(req.user.bio)}</p>
+    ${
+      profileLinks.length
+        ? `<section><h2>Profiles</h2>${profileLinks
+            .map(([label, url]) => `<a class="chip" href="${url}" target="_blank" rel="noreferrer">${label}</a>`)
+            .join("")}</section>`
+        : ""
+    }
     <section>
       <h2>Skills</h2>
       ${skills.map((skill) => `<span class="chip">${escapeHtml(skill.name)} - ${escapeHtml(skill.level)}</span>`).join("")}

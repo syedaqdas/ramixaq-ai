@@ -113,6 +113,12 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
+  const verifyOtp = async (payload) => {
+    const { data } = await api.post("/auth/verify-otp", payload);
+    persistSession(data);
+    return data;
+  };
+
   const updateProfile = async (payload) => {
     const { data } = await api.put("/auth/profile", payload);
     setSessionUser(data.user);
@@ -126,6 +132,7 @@ export const AuthProvider = ({ children }) => {
       loading,
       register,
       login,
+      verifyOtp,
       logout,
       updateProfile,
       setSessionUser

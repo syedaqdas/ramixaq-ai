@@ -8,10 +8,12 @@
   },
   "main": "src/server.js",
   "scripts": {
-    "check": "node --check src/app.js && node --check src/server.js && node --check src/controllers/authController.js && node --check src/controllers/aiController.js && node --check src/controllers/analyticsController.js && node --check src/controllers/profileController.js && node --check src/controllers/notificationController.js && node --check src/controllers/resumeController.js && node --check src/controllers/adminController.js && node --check tests/cors-auth.test.mjs",
+    "check": "node --check src/app.js && node --check src/server.js && node --check src/controllers/authController.js && node --check src/controllers/aiController.js && node --check src/controllers/analyticsController.js && node --check src/controllers/profileController.js && node --check src/controllers/publicController.js && node --check src/controllers/portfolioController.js && node --check src/controllers/notificationController.js && node --check src/controllers/resumeController.js && node --check src/controllers/internshipController.js && node --check src/controllers/adminController.js && node --check src/routes/internshipRoutes.js && node --check src/services/internshipProvider.js && node --check src/data/internships.js && node --check src/utils/profileLinks.js && node --check src/utils/resumeParser.js && node --check src/middleware/errorHandler.js && node --check tests/cors-auth.test.mjs && node --check tests/feature-routes.test.mjs",
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
-    "test:cors": "node --test tests/cors-auth.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "test:cors": "node --test tests/cors-auth.test.mjs",
+    "test:features": "node --test tests/feature-routes.test.mjs"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

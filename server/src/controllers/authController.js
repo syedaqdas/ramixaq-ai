@@ -2,8 +2,9 @@ import crypto from "node:crypto";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import { logActivity } from "../utils/activity.js";
-import { sendPasswordResetEmail, sendVerificationEmail } from "../utils/email.js";
+import { sendOtpEmail, sendPasswordResetEmail, sendVerificationEmail } from "../utils/email.js";
 import { createNotification } from "../utils/notification.js";
+import { integrationStatuses, normalizeProfileUrl, sanitizeText } from "../utils/profileLinks.js";
 import { createUniqueSlug, normalizeSlug } from "../utils/slug.js";
 
 const createToken = (id) => {
@@ -21,10 +22,16 @@ export const publicUser = (user) => ({
   headline: user.headline,
   bio: user.bio,
   location: user.location,
+  phone: user.phone,
   avatarUrl: user.avatarUrl,
   github: user.github,
   linkedin: user.linkedin,
+  leetcode: user.leetcode,
+  portfolio: user.portfolio || user.website,
   website: user.website,
+  resumeData: user.resumeData,
+  internshipPreferences: user.internshipPreferences,
+  integrations: integrationStatuses(user),
   publicSlug: user.publicSlug,
   emailVerified: user.emailVerified !== false,
   role: user.role,
@@ -35,6 +42,13 @@ export const publicUser = (user) => ({
 
 const createSecureToken = () => crypto.randomBytes(32).toString("hex");
 const hashToken = (token) => crypto.createHash("sha256").update(token).digest("hex");
+const getOtpSecret = () => {
+  const secret = process.env.OTP_SECRET || (process.env.NODE_ENV !== "production" ? process.env.JWT_SECRET : "");
+  if (!secret) throw new Error("OTP_SECRET is missing. Add it to the backend environment");
+  return secret;
+};
+const hashOtp = (email, otp) =>
+  crypto.createHmac("sha256", getOtpSecret()).update(`${email.toLowerCase()}:${otp}`).digest("hex");
 
 const issueVerificationToken = async (user) => {
   const token = createSecureToken();
@@ -47,10 +61,18 @@ const issueVerificationToken = async (user) => {
 
 export const register = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const name = sanitizeText(req.body.name, 80);
+    const email = sanitizeText(req.body.email, 254).toLowerCase();
+    const password = String(req.body.password || "");
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: "Name, email, and password are required" });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ message: "A valid email is required" });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
     }
 
     const existingUser = await User.findOne({ email });
@@ -95,7 +117,8 @@ export const register = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const email = sanitizeText(req.body.email, 254).toLowerCase();
+    const password = String(req.body.password || "");
 
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password are required" });
@@ -145,14 +168,41 @@ export const getMe = async (req, res, next) => {
 
 export const updateProfile = async (req, res, next) => {
   try {
-    const allowedFields = ["name", "headline", "bio", "location", "github", "linkedin", "website"];
+    const textFields = ["name", "headline", "bio", "location", "phone"];
+    const linkFields = ["github", "linkedin", "leetcode", "portfolio"];
     const updates = {};
 
-    allowedFields.forEach((field) => {
+    textFields.forEach((field) => {
       if (req.body[field] !== undefined) {
-        updates[field] = req.body[field];
+        const maxLength = field === "bio" ? 500 : field === "phone" ? 30 : 120;
+        updates[field] = sanitizeText(req.body[field], maxLength);
       }
     });
+
+    for (const field of linkFields) {
+      if (req.body[field] !== undefined) {
+        updates[field] = normalizeProfileUrl(req.body[field], field);
+      }
+    }
+
+    if (req.body.website !== undefined && req.body.portfolio === undefined) {
+      updates.portfolio = normalizeProfileUrl(req.body.website, "portfolio");
+    }
+    if (updates.portfolio !== undefined) updates.website = updates.portfolio;
+
+    if (req.body.internshipPreferences && typeof req.body.internshipPreferences === "object") {
+      const desiredRole = sanitizeText(req.body.internshipPreferences.desiredRole, 100);
+      const locationPreference = sanitizeText(req.body.internshipPreferences.locationPreference, 100);
+      const workMode = ["Any", "Remote", "Hybrid", "On-site"].includes(req.body.internshipPreferences.workMode)
+        ? req.body.internshipPreferences.workMode
+        : "Any";
+      const experienceLevel = ["Beginner", "Entry Level", "Intermediate"].includes(
+        req.body.internshipPreferences.experienceLevel
+      )
+        ? req.body.internshipPreferences.experienceLevel
+        : "Entry Level";
+      updates.internshipPreferences = { desiredRole, locationPreference, workMode, experienceLevel };
+    }
 
     if (req.body.publicSlug !== undefined) {
       const requestedSlug = normalizeSlug(req.body.publicSlug);
@@ -184,6 +234,94 @@ export const updateProfile = async (req, res, next) => {
     });
 
     res.json({ user: publicUser(user) });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const sendLoginOtp = async (req, res, next) => {
+  try {
+    const email = sanitizeText(req.body.email, 254).toLowerCase();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ message: "A valid email is required" });
+    }
+
+    const user = await User.findOne({ email }).select(
+      "+loginOtpHash +loginOtpExpires +loginOtpAttempts +loginOtpLastSentAt"
+    );
+    const genericMessage = "If an account exists for that email, a login code has been sent";
+    if (!user) return res.json({ message: genericMessage });
+
+    if (user.loginOtpLastSentAt && Date.now() - user.loginOtpLastSentAt.getTime() < 60 * 1000) {
+      return res.json({ message: genericMessage, expiresInSeconds: 600 });
+    }
+
+    const otp = String(crypto.randomInt(100000, 1000000));
+    user.loginOtpHash = hashOtp(email, otp);
+    user.loginOtpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    user.loginOtpAttempts = 0;
+    user.loginOtpLastSentAt = new Date();
+    await user.save({ validateBeforeSave: false });
+
+    const sent = await sendOtpEmail({ user, otp });
+    if (!sent && process.env.NODE_ENV === "production") {
+      user.loginOtpHash = undefined;
+      user.loginOtpExpires = undefined;
+      await user.save({ validateBeforeSave: false });
+      return res.json({ message: genericMessage, expiresInSeconds: 600 });
+    }
+    if (!sent && process.env.NODE_ENV === "development") {
+      console.info(`Ramixaq AI development OTP for ${email}: ${otp}`);
+    }
+
+    res.json({ message: genericMessage, expiresInSeconds: 600 });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyLoginOtp = async (req, res, next) => {
+  try {
+    const email = sanitizeText(req.body.email, 254).toLowerCase();
+    const otp = sanitizeText(req.body.otp, 6);
+    if (!email || !/^\d{6}$/.test(otp)) {
+      return res.status(400).json({ message: "Email and a 6 digit OTP are required" });
+    }
+
+    const user = await User.findOne({ email }).select(
+      "+loginOtpHash +loginOtpExpires +loginOtpAttempts +loginOtpLastSentAt"
+    );
+    if (!user?.loginOtpHash || !user.loginOtpExpires || user.loginOtpExpires.getTime() <= Date.now()) {
+      return res.status(400).json({ message: "OTP is invalid or expired" });
+    }
+    if ((user.loginOtpAttempts || 0) >= 5) {
+      return res.status(429).json({ message: "Too many incorrect attempts. Request a new OTP" });
+    }
+
+    const expected = Buffer.from(user.loginOtpHash, "hex");
+    const received = Buffer.from(hashOtp(email, otp), "hex");
+    const isValid = expected.length === received.length && crypto.timingSafeEqual(expected, received);
+    if (!isValid) {
+      user.loginOtpAttempts = (user.loginOtpAttempts || 0) + 1;
+      await user.save({ validateBeforeSave: false });
+      return res.status(401).json({ message: "OTP is invalid or expired" });
+    }
+
+    user.loginOtpHash = undefined;
+    user.loginOtpExpires = undefined;
+    user.loginOtpAttempts = 0;
+    user.loginOtpLastSentAt = undefined;
+    if (!user.publicSlug) user.publicSlug = await createUniqueSlug(user.name, user._id);
+    await user.save({ validateBeforeSave: false });
+
+    await logActivity({
+      user: user._id,
+      type: "auth.otp_login",
+      message: `${user.name} logged in with OTP`,
+      ip: req.ip
+    });
+
+    res.json({ user: publicUser(user), token: createToken(user._id) });
   } catch (error) {
     next(error);
   }

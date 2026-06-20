@@ -1,5 +1,6 @@
-import { BadgeCheck, Download, ExternalLink, Save, Upload } from "lucide-react";
+import { BadgeCheck, Download, ExternalLink, Link2, Save, Upload } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../api/axios";
 import { getApiErrorMessage } from "../api/errors";
 import FormInput from "../components/FormInput";
@@ -13,10 +14,12 @@ const Profile = () => {
     headline: user?.headline || "",
     bio: user?.bio || "",
     location: user?.location || "",
+    phone: user?.phone || "",
     publicSlug: user?.publicSlug || "",
     github: user?.github || "",
     linkedin: user?.linkedin || "",
-    website: user?.website || ""
+    leetcode: user?.leetcode || "",
+    portfolio: user?.portfolio || user?.website || ""
   });
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
@@ -84,10 +87,16 @@ const Profile = () => {
   return (
     <div>
       <PageHeader eyebrow="Public profile" title="Profile settings">
-        <button className="btn-secondary" onClick={exportProfile}>
-          <Download size={18} />
-          Export PDF
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <Link className="btn-secondary" to="/profile/integrations">
+            <Link2 size={18} />
+            Integrations
+          </Link>
+          <button className="btn-secondary" onClick={exportProfile}>
+            <Download size={18} />
+            Export PDF
+          </button>
+        </div>
       </PageHeader>
 
       <section className="card mb-4 flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
@@ -120,10 +129,12 @@ const Profile = () => {
         <FormInput label="Name" value={form.name} onChange={handleChange("name")} required />
         <FormInput label="Headline" value={form.headline} onChange={handleChange("headline")} />
         <FormInput label="Location" value={form.location} onChange={handleChange("location")} />
-        <FormInput label="Portfolio URL" value={form.publicSlug} onChange={handleChange("publicSlug")} placeholder="your-name" />
-        <FormInput label="GitHub" value={form.github} onChange={handleChange("github")} />
-        <FormInput label="LinkedIn" value={form.linkedin} onChange={handleChange("linkedin")} />
-        <FormInput label="Website" value={form.website} onChange={handleChange("website")} />
+        <FormInput label="Phone" type="tel" value={form.phone} onChange={handleChange("phone")} />
+        <FormInput label="Public profile URL slug" value={form.publicSlug} onChange={handleChange("publicSlug")} placeholder="your-name" />
+        <FormInput label="GitHub profile URL" type="url" value={form.github} onChange={handleChange("github")} />
+        <FormInput label="LinkedIn profile URL" type="url" value={form.linkedin} onChange={handleChange("linkedin")} />
+        <FormInput label="LeetCode profile URL" type="url" value={form.leetcode} onChange={handleChange("leetcode")} />
+        <FormInput label="Portfolio website URL" type="url" value={form.portfolio} onChange={handleChange("portfolio")} />
         <FormInput className="md:col-span-2" label="Bio" textarea value={form.bio} onChange={handleChange("bio")} />
         {publicSlug && (
           <div className="rounded-md border border-line bg-zinc-950 p-3 text-sm text-zinc-400 md:col-span-2">

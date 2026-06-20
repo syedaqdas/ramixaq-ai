@@ -1,0 +1,80 @@
+export const internships = [
+  {
+    id: "cloudnova-mern-2026",
+    title: "MERN Stack Developer Intern",
+    company: "CloudNova Labs",
+    location: "Remote",
+    remoteType: "Remote",
+    stipend: "₹20,000/month",
+    requiredSkills: ["JavaScript", "React", "Node.js", "Express", "MongoDB", "REST API", "Git"],
+    applyLink: "https://example.com/internships/cloudnova-mern",
+    deadline: "2026-07-31",
+    experienceLevel: "Entry Level",
+    description: "Build production dashboards, APIs, authentication, and deployment workflows."
+  },
+  {
+    id: "pixelforge-frontend-2026",
+    title: "Frontend Engineering Intern",
+    company: "PixelForge Studio",
+    location: "Bengaluru",
+    remoteType: "Hybrid",
+    stipend: "₹18,000/month",
+    requiredSkills: ["HTML", "CSS", "JavaScript", "React", "Responsive Design", "Tailwind CSS", "Git"],
+    applyLink: "https://example.com/internships/pixelforge-frontend",
+    deadline: "2026-08-10",
+    experienceLevel: "Entry Level",
+    description: "Create accessible responsive interfaces and integrate product APIs."
+  },
+  {
+    id: "nodeworks-backend-2026",
+    title: "Backend API Intern",
+    company: "NodeWorks Systems",
+    location: "Hyderabad",
+    remoteType: "On-site",
+    stipend: "₹22,000/month",
+    requiredSkills: ["Node.js", "Express", "MongoDB", "Mongoose", "REST API", "JWT", "Testing"],
+    applyLink: "https://example.com/internships/nodeworks-backend",
+    deadline: "2026-08-15",
+    experienceLevel: "Intermediate",
+    description: "Design secure APIs, schemas, test suites, and authentication workflows."
+  },
+  {
+    id: "promptops-ai-product-2026",
+    title: "AI Product Intern",
+    company: "PromptOps AI",
+    location: "Remote",
+    remoteType: "Remote",
+    stipend: "₹25,000/month",
+    requiredSkills: ["Python", "Prompt Engineering", "APIs", "Data Analysis", "React", "Documentation"],
+    applyLink: "https://example.com/internships/promptops-ai",
+    deadline: "2026-08-20",
+    experienceLevel: "Entry Level",
+    description: "Prototype AI-assisted product workflows and measure user outcomes."
+  },
+  {
+    id: "insightgrid-data-2026",
+    title: "Data Analyst Intern",
+    company: "InsightGrid Analytics",
+    location: "Pune",
+    remoteType: "Hybrid",
+    stipend: "₹17,000/month",
+    requiredSkills: ["Excel", "SQL", "Python", "Data Visualization", "Statistics", "Power BI"],
+    applyLink: "https://example.com/internships/insightgrid-data",
+    deadline: "2026-09-01",
+    experienceLevel: "Beginner",
+    description: "Analyze datasets, build dashboards, and communicate actionable insights."
+  },
+  {
+    id: "mobilemint-fullstack-2026",
+    title: "Full Stack Product Intern",
+    company: "MobileMint",
+    location: "Mumbai",
+    remoteType: "Hybrid",
+    stipend: "₹24,000/month",
+    requiredSkills: ["JavaScript", "React", "Node.js", "PostgreSQL", "REST API", "Docker", "Git"],
+    applyLink: "https://example.com/internships/mobilemint-fullstack",
+    deadline: "2026-09-05",
+    experienceLevel: "Intermediate",
+    description: "Ship full-stack product features from UI through observability and deployment."
+  }
+];

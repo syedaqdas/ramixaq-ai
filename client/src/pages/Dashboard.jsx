@@ -1,4 +1,4 @@
-import { Award, BadgeCheck, BriefcaseBusiness, ExternalLink, Target } from "lucide-react";
+import { Award, BadgeCheck, BriefcaseBusiness, Code2, ExternalLink, Github, Globe, Linkedin, Target } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/axios";
@@ -8,6 +8,7 @@ import ReadinessMeter from "../components/ReadinessMeter";
 import StatCard from "../components/StatCard";
 import StatusBadge from "../components/StatusBadge";
 import { useAuth } from "../context/AuthContext";
+import { externalUrl } from "../utils/format";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -58,6 +59,36 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      <section className="card mt-4 p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-white">Profile integrations</h2>
+            <p className="mt-1 text-sm text-zinc-500">Public links strengthen recruiter trust and internship matching.</p>
+          </div>
+          <Link className="btn-secondary" to="/profile/integrations">Manage links</Link>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-3">
+          {[
+            ["GitHub", user?.github, Github],
+            ["LinkedIn", user?.linkedin, Linkedin],
+            ["LeetCode", user?.leetcode, Code2],
+            ["Portfolio", user?.portfolio || user?.website, Globe]
+          ].map(([label, href, Icon]) =>
+            href ? (
+              <a className="btn-secondary" href={externalUrl(href)} target="_blank" rel="noreferrer" key={label}>
+                <Icon size={17} />
+                {label}
+              </a>
+            ) : (
+              <Link className="btn-secondary opacity-60" to="/profile/integrations" key={label}>
+                <Icon size={17} />
+                Add {label}
+              </Link>
+            )
+          )}
+        </div>
+      </section>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard icon={BadgeCheck} label="Skills" value={summary?.counts?.skills || 0} />

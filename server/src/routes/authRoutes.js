@@ -6,8 +6,10 @@ import {
   register,
   resendVerification,
   resetPassword,
+  sendLoginOtp,
   updateProfile,
-  verifyEmail
+  verifyEmail,
+  verifyLoginOtp
 } from "../controllers/authController.js";
 import { protect } from "../middleware/auth.js";
 
@@ -18,6 +20,8 @@ router.post("/login", login);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
 router.post("/verify-email", verifyEmail);
+router.post("/send-otp", sendLoginOtp);
+router.post("/verify-otp", verifyLoginOtp);
 router.get("/me", protect, getMe);
 router.put("/profile", protect, updateProfile);
 router.post("/resend-verification", protect, resendVerification);

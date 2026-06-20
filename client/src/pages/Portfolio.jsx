@@ -1,4 +1,4 @@
-import { Award, BadgeCheck, BriefcaseBusiness, Github, Globe, Linkedin, MapPin, Target } from "lucide-react";
+import { Award, BadgeCheck, BriefcaseBusiness, Code2, Github, Globe, Linkedin, MapPin, Target } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api from "../api/axios";
@@ -62,7 +62,8 @@ const Portfolio = () => {
             <div className="mt-4 space-y-3">
               {user.github && <a className="btn-secondary w-full justify-start" href={externalUrl(user.github)} target="_blank" rel="noreferrer"><Github size={18} />GitHub</a>}
               {user.linkedin && <a className="btn-secondary w-full justify-start" href={externalUrl(user.linkedin)} target="_blank" rel="noreferrer"><Linkedin size={18} />LinkedIn</a>}
-              {user.website && <a className="btn-secondary w-full justify-start" href={externalUrl(user.website)} target="_blank" rel="noreferrer"><Globe size={18} />Website</a>}
+              {user.leetcode && <a className="btn-secondary w-full justify-start" href={externalUrl(user.leetcode)} target="_blank" rel="noreferrer"><Code2 size={18} />LeetCode</a>}
+              {(user.portfolio || user.website) && <a className="btn-secondary w-full justify-start" href={externalUrl(user.portfolio || user.website)} target="_blank" rel="noreferrer"><Globe size={18} />Portfolio</a>}
             </div>
           </div>
         </section>

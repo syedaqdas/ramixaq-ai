@@ -7,6 +7,7 @@ import {
   FileScan,
   FileText,
   Gauge,
+  GitBranch,
   GraduationCap,
   LogOut,
   Map,
@@ -28,8 +29,9 @@ import ThemeToggle from "./ThemeToggle";
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: Gauge },
   { to: "/ai/resume-analyzer", label: "AI Resume", icon: FileScan },
+  { to: "/resume/upload", label: "Resume Import", icon: FileText },
   { to: "/ai/skill-gap", label: "Skill Gap", icon: Sparkles },
-  { to: "/ai/internships", label: "Internships", icon: GraduationCap },
+  { to: "/internships/matcher", label: "Internship Matcher", icon: GraduationCap },
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/skills", label: "Skills", icon: BadgeCheck },
   { to: "/projects", label: "Projects", icon: BriefcaseBusiness },
@@ -40,7 +42,8 @@ const navItems = [
   { to: "/resume-builder", label: "Resume Builder", icon: FileText },
   { to: "/portfolio-generator", label: "Portfolio Site", icon: UserRound },
   { to: "/achievements", label: "Achievements", icon: Trophy },
-  { to: "/profile", label: "Profile", icon: UserRound }
+  { to: "/profile", label: "Profile", icon: UserRound },
+  { to: "/profile/integrations", label: "Integrations", icon: GitBranch }
 ];
 
 const Sidebar = ({ onNavigate }) => {
@@ -153,7 +156,7 @@ const Layout = () => {
         {[
           { to: "/dashboard", label: "Home", icon: Gauge },
           { to: "/ai/resume-analyzer", label: "Resume", icon: FileScan },
-          { to: "/ai/internships", label: "Matches", icon: GraduationCap },
+          { to: "/internships/matcher", label: "Matches", icon: GraduationCap },
           { to: "/profile", label: "Profile", icon: UserRound }
         ].map(({ to, label, icon: Icon }) => (
           <NavLink

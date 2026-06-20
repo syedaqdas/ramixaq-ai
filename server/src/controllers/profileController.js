@@ -62,7 +62,17 @@ export const exportProfilePdf = async (req, res, next) => {
     doc.fontSize(25).fillColor("#111827").text(req.user.name);
     doc.fontSize(12).fillColor("#374151").text(req.user.headline || "Student professional");
     doc.fontSize(9).fillColor("#6b7280").text(
-      [req.user.email, req.user.location, req.user.github, req.user.linkedin, req.user.website].filter(Boolean).join(" | ")
+      [
+        req.user.email,
+        req.user.phone,
+        req.user.location,
+        req.user.github,
+        req.user.linkedin,
+        req.user.leetcode,
+        req.user.portfolio || req.user.website
+      ]
+        .filter(Boolean)
+        .join(" | ")
     );
     if (req.user.bio) doc.moveDown(0.8).fontSize(10).fillColor("#374151").text(req.user.bio);
 

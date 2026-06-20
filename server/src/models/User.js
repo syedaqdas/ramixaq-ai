@@ -40,6 +40,26 @@ const userSchema = new mongoose.Schema(
       default: undefined,
       select: false
     },
+    loginOtpHash: {
+      type: String,
+      default: undefined,
+      select: false
+    },
+    loginOtpExpires: {
+      type: Date,
+      default: undefined,
+      select: false
+    },
+    loginOtpAttempts: {
+      type: Number,
+      default: 0,
+      select: false
+    },
+    loginOtpLastSentAt: {
+      type: Date,
+      default: undefined,
+      select: false
+    },
     password: {
       type: String,
       required: [true, "Password is required"],
@@ -63,6 +83,12 @@ const userSchema = new mongoose.Schema(
       default: "",
       trim: true,
       maxlength: 100
+    },
+    phone: {
+      type: String,
+      default: "",
+      trim: true,
+      maxlength: 30
     },
     avatarUrl: {
       type: String,
@@ -93,10 +119,47 @@ const userSchema = new mongoose.Schema(
       default: "",
       trim: true
     },
+    leetcode: {
+      type: String,
+      default: "",
+      trim: true
+    },
+    portfolio: {
+      type: String,
+      default: "",
+      trim: true
+    },
     website: {
       type: String,
       default: "",
       trim: true
+    },
+    resumeData: {
+      fileName: { type: String, default: "", trim: true },
+      parsedAt: Date,
+      name: { type: String, default: "", trim: true },
+      email: { type: String, default: "", trim: true },
+      phone: { type: String, default: "", trim: true },
+      skills: { type: [String], default: [] },
+      education: { type: [String], default: [] },
+      projects: { type: [String], default: [] },
+      experience: { type: [String], default: [] },
+      certifications: { type: [String], default: [] },
+      textPreview: { type: String, default: "", maxlength: 2000 }
+    },
+    internshipPreferences: {
+      desiredRole: { type: String, default: "Software Developer Intern", trim: true, maxlength: 100 },
+      locationPreference: { type: String, default: "", trim: true, maxlength: 100 },
+      workMode: {
+        type: String,
+        enum: ["Any", "Remote", "Hybrid", "On-site"],
+        default: "Any"
+      },
+      experienceLevel: {
+        type: String,
+        enum: ["Beginner", "Entry Level", "Intermediate"],
+        default: "Entry Level"
+      }
     },
     role: {
       type: String,

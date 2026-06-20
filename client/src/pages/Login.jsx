@@ -73,6 +73,9 @@ const Login = () => {
             <LogIn size={18} />
             {submitting ? "Signing in..." : "Login"}
           </button>
+          <Link className="btn-secondary w-full" to="/login/otp">
+            Login with email OTP
+          </Link>
         </form>
 
         <p className="mt-6 text-center text-sm text-zinc-400">

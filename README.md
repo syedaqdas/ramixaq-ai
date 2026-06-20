@@ -50,6 +50,10 @@ Built and Developed by **Syed Aqdas Imam - Software Developer**
 - Persistent dark/light mode
 - In-app notifications with unread state
 - Responsive mobile navigation and theme-aware analytics
+- LinkedIn, GitHub, LeetCode, and portfolio profile integrations with connection status
+- Rule-based PDF resume parsing with automatic MongoDB profile and skill updates
+- Internship search provider architecture with profile-aware match scores and readiness guidance
+- Email OTP login with hashed codes, 10-minute expiry, resend cooldown, and attempt limits
 - Clean responsive dark and light UI
 
 ## Folder Structure
@@ -105,8 +109,11 @@ PORT=5000
 NODE_ENV=development
 MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/ramixaq-ai
 JWT_SECRET=replace-with-a-long-random-secret
+OTP_SECRET=replace-with-a-separate-long-random-secret
 CLIENT_URL=http://localhost:5173
-SMTP_HOST=smtp.example.com
+EMAIL_USER=your-email@example.com
+EMAIL_PASS=your-email-app-password
+SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_SECURE=false
 SMTP_USER=your-smtp-username
@@ -151,6 +158,8 @@ Backend health check: `http://localhost:5000/api/health`
 - `POST /api/auth/reset-password`
 - `POST /api/auth/verify-email`
 - `POST /api/auth/resend-verification`
+- `POST /api/auth/send-otp`
+- `POST /api/auth/verify-otp`
 - `GET /api/auth/me`
 - `PUT /api/auth/profile`
 
@@ -163,6 +172,9 @@ Backend health check: `http://localhost:5000/api/health`
 - `GET /api/analytics`
 - `GET /api/achievements`
 - `GET /api/resume/download`
+- `POST /api/resume/upload`
+- `GET /api/internships/search`
+- `POST /api/internships/match`
 - `GET /api/portfolio/generate`
 - `POST /api/profile/avatar`
 - `GET /api/profile/export`
@@ -212,11 +224,17 @@ Admin endpoints require the authenticated user document to have `role: "admin"`.
    - `NODE_ENV=production`
    - `MONGO_URI=your MongoDB Atlas connection string`
    - `JWT_SECRET=your long random secret`
+   - `OTP_SECRET=a separate long random secret used to hash login codes`
    - `CLIENT_URL=https://your-vercel-app.vercel.app`
-   - SMTP variables for verification and password-reset emails
+   - `EMAIL_USER` and `EMAIL_PASS` for OTP email delivery
+   - SMTP variables for verification, OTP, and password-reset emails
    - Cloudinary variables for persistent profile photo storage
 
 PDF and image uploads are handled in memory. Resume PDFs are limited to 5 MB and profile images to 2 MB. Profile images are persisted in Cloudinary, so no Render disk is required.
+
+`EMAIL_USER` and `EMAIL_PASS` can be used with Gmail app passwords; the backend defaults to `smtp.gmail.com` when these are present. For other providers, set `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, and `SMTP_PASS`. Missing credentials only print OTP codes when `NODE_ENV=development`; production never exposes OTPs.
+
+Internship search currently uses the mock provider in `server/src/services/internshipProvider.js`. Replace that provider implementation with a real API adapter later while preserving the `/api/internships/search` and `/api/internships/match` response contracts.
 
 You can also use the included `render.yaml` as a blueprint.
 
@@ -234,6 +252,7 @@ The included `client/vercel.json` handles SPA routing rewrites.
 ## Production Checklist
 
 - Use a strong `JWT_SECRET`.
+- Use a separate strong `OTP_SECRET`.
 - Set Render `CLIENT_URL` to the exact Vercel URL.
 - Set Vercel `VITE_API_URL` to the exact Render API URL with `/api`.
 - Confirm `/api/health` returns `{ "status": "ok" }`.
@@ -242,5 +261,6 @@ The included `client/vercel.json` handles SPA routing rewrites.
 - Test PDF upload with a real resume under 5 MB.
 - Confirm resume PDF download and generated portfolio HTML work in production.
 - Configure and test SMTP email delivery before enabling public signups.
+- Verify OTP delivery with a production mailbox and app password.
 - Configure Cloudinary and verify profile photo uploads from the deployed frontend.
 - Verify the custom portfolio URL and profile PDF export for a production account.

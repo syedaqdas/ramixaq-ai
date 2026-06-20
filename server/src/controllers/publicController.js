@@ -4,6 +4,21 @@ import Project from "../models/Project.js";
 import Skill from "../models/Skill.js";
 import User from "../models/User.js";
 
+const publicProfileUser = (user) => ({
+  id: user._id,
+  name: user.name,
+  headline: user.headline,
+  bio: user.bio,
+  location: user.location,
+  avatarUrl: user.avatarUrl,
+  publicSlug: user.publicSlug,
+  github: user.github,
+  linkedin: user.linkedin,
+  leetcode: user.leetcode,
+  portfolio: user.portfolio || user.website,
+  website: user.website
+});
+
 export const getPublicProfile = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.userId).select("-password -email");
@@ -20,7 +35,7 @@ export const getPublicProfile = async (req, res, next) => {
     ]);
 
     res.json({
-      user,
+      user: publicProfileUser(user),
       skills,
       projects,
       certificates,
@@ -48,7 +63,7 @@ export const getPublicPortfolio = async (req, res, next) => {
       Goal.find({ user: user._id, status: { $ne: "Not Started" } }).sort({ createdAt: -1 })
     ]);
 
-    res.json({ user, skills, projects, certificates, goals });
+    res.json({ user: publicProfileUser(user), skills, projects, certificates, goals });
   } catch (error) {
     next(error);
   }

@@ -3,17 +3,21 @@ import nodemailer from "nodemailer";
 const getClientUrl = () => (process.env.CLIENT_URL || "").split(",")[0].trim().replace(/\/+$/, "");
 
 const createTransporter = () => {
-  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+  const user = process.env.EMAIL_USER || process.env.SMTP_USER;
+  const pass = process.env.EMAIL_PASS || process.env.SMTP_PASS;
+  const host = process.env.SMTP_HOST || (process.env.EMAIL_USER ? "smtp.gmail.com" : "");
+
+  if (!host || !user || !pass) {
     return null;
   }
 
   return nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
+    host,
     port: Number(process.env.SMTP_PORT || 587),
     secure: String(process.env.SMTP_SECURE).toLowerCase() === "true",
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
+      user,
+      pass
     },
     disableFileAccess: true,
     disableUrlAccess: true
@@ -30,7 +34,7 @@ export const sendEmail = async ({ to, subject, html }) => {
 
   try {
     await transporter.sendMail({
-      from: process.env.EMAIL_FROM || process.env.SMTP_USER,
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER || process.env.SMTP_USER,
       to,
       subject,
       html,
@@ -61,3 +65,10 @@ export const sendPasswordResetEmail = ({ user, token }) => {
     html: `<p>Hello ${user.name},</p><p>A password reset was requested for your account.</p><p><a href="${resetUrl}">Reset password</a></p><p>This link expires in 60 minutes. Ignore this email if you did not request it.</p>`
   });
 };
+
+export const sendOtpEmail = ({ user, otp }) =>
+  sendEmail({
+    to: user.email,
+    subject: "Your Ramixaq AI login code",
+    html: `<p>Hello ${user.name},</p><p>Your Ramixaq AI login code is:</p><p style="font-size:28px;font-weight:700;letter-spacing:6px">${otp}</p><p>This code expires in 10 minutes. Do not share it with anyone.</p>`
+  });
